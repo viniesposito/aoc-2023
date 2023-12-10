@@ -15,3 +15,4 @@ f = open("input", "r")
 print(part1(f))
 
 def part2(inputs):
+    pass
