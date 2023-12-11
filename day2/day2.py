@@ -1,3 +1,5 @@
+from numpy import prod
+
 test = [
     "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
     "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
@@ -7,7 +9,7 @@ test = [
     # "Game 100: 9 green, 2 blue, 12 red; 2 blue, 14 red, 2 green; 14 red, 12 green"
     ]
 
-def day2(input):
+def part1(input):
 
     score = 0
 
@@ -39,7 +41,7 @@ def day2(input):
                 if color_data["green"] <= 13:
                     if color_data["blue"] <= 14:
                         if good_game and draw == draws[-1]: # sketchy af but gets the job done!
-                            print(f"Game {game_id} is ok")
+                            # print(f"Game {game_id} is ok")
                             score += game_id
                     else:
                         good_game = False
@@ -50,8 +52,44 @@ def day2(input):
 
     return score
 
-print(f"Test output = {day2(test)} \n")
+print(f"Part 1 test output = {part1(test)} \n")
 
 with open("day2\input", "r") as input:
-    print(f"Output = {day2(input)}")
+    print(f"Part 1 output = {part1(input)} \n")
 
+def part2(input):
+
+    score = 0
+
+    for game in input:
+
+        draws = game.split(": ")[1].split("; ")
+
+        color_data = {
+            "red":0,
+            "green":0,
+            "blue":0
+        }
+
+        for draw in draws:
+            
+            colors = list(color_data.keys())
+
+            for entry in draw.split(", "):
+                for color in colors:
+                    if color in entry:
+                        num = int("".join([letter for letter in entry if letter.isdigit()]))
+                        if num > color_data[color]:                  
+                            color_data[color] = num
+                            
+            
+        power = prod(list(color_data.values()))
+
+        score += power
+
+    return score
+
+print(f"Part 2 test output = {part2(test)} \n")
+
+with open("day2\input", "r") as input:
+    print(f"Part 2 output = {part2(input)} \n")
