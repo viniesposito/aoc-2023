@@ -82,7 +82,6 @@ def part2(input):
                         if num > color_data[color]:                  
                             color_data[color] = num
                             
-            
         power = prod(list(color_data.values()))
 
         score += power
