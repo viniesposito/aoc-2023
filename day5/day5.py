@@ -38,7 +38,6 @@ humidity-to-location map:
 
 def part1(input):
 
-    # input = [x for x in input.splitlines() if x != ""]
     input = input.splitlines()
     seeds = [x for x in input if "seeds" in x][0]
     seeds = [int(x) for x in re.findall(r"\d+",seeds)]
@@ -58,32 +57,18 @@ def part1(input):
                 val_int = [int(x) for x in re.findall(r"\d+",val)]
                 map_dict_raw[map].append(val_int)
 
-    lookup_dict = {}
-
-    for map_name in maps:
-        # print(map_name)
-        map_raw = map_dict_raw[map_name]
-        
-        map_dict = {x:x for x in range(100)}
-        
-        for range_list in map_raw:
-            # print(range_list)
-            source_range = range(range_list[1],range_list[1]+range_list[2])
-            dest_range = range(range_list[0],range_list[0]+range_list[2])
-        
-            for i in range(len(source_range)):
-                # print(i)
-                map_dict[source_range[i]] = dest_range[i]
-
-        lookup_dict[map_name] = map_dict
-
-    
     locations = []
     
     for seed in seeds:
         for map_name in maps:
-            seed = lookup_dict[map_name][seed]
-            
+            for line in map_dict_raw[map_name]:
+                
+                if line[1] <= seed < line[1] + line[2]:
+                    seed +=  line[0] - line[1]
+                    break
+                
+                print(seed, map_name)
+
             if map_name == maps[-1]:
                 locations.append(seed)
 
@@ -91,7 +76,7 @@ def part1(input):
 
 print(f"Part 1 test output = {part1(test)} \n")
 
-# with open("day5\input", "r") as input:
-#     input = "".join([val for val in input])
+with open("day5\input", "r") as input:
+    input = "".join([val for val in input])
 
-# print(f"Part 1 output = {part1(input)} \n")
+print(f"Part 1 output = {part1(input)} \n")
