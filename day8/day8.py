@@ -1,3 +1,5 @@
+from math import lcm
+
 test1 = """
 RL
 
@@ -75,21 +77,26 @@ def part2(input):
     
     nodes = [n for n in network_dict.keys() if n[-1] == "A"]
     
-    steps = 0
+    steps_list = []
 
-    while not all([n[-1] == "Z" for n in nodes]):
-    
-        instruction = instructions[steps % len(instructions)]
+    for node in nodes:
+        steps = 0
+
+        while node[-1] != "Z":
         
-        if instruction == "L":
-            nodes = [network_dict[n][0] for n in nodes]
-        else:
-            nodes = [network_dict[n][1] for n in nodes]
+            instruction = instructions[steps % len(instructions)]
+            
+            if instruction == "L":
+                node = network_dict[node][0]
+            else:
+                node = network_dict[node][1]
+            
+            steps += 1
         
-        steps += 1
+        steps_list.append(steps)
         
-    return steps
+    return lcm(*steps_list)
 
 print(f"Part 2 test output = {part2(test3)} \n")
 
-# print(f"Part 2 output = {part2(input)} \n")
+print(f"Part 2 output = {part2(input)} \n")
