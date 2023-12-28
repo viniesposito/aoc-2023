@@ -26,15 +26,14 @@ def part1(input):
     input = input[1:]
     
     network_dict = {x[:3]:[x[7:10], x[-4:-1]] for x in input}
-    print(instructions)
-    print(network_dict)
+    
     steps = 0
-    node = input[0][:3]
+    node = "AAA"
 
     while node != "ZZZ":
-        # print(steps)
+        
         instruction = instructions[steps % len(instructions)]
-        # print(instruction)
+    
         if instruction == "L":
             node = network_dict[node][0]
         else:
@@ -51,3 +50,46 @@ with open("day8\input", "r") as input:
     input = "".join([val for val in input])
 
 print(f"Part 1 output = {part1(input)} \n")
+
+test3 = """
+LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)
+"""
+
+def part2(input):
+    
+    input = [x for x in input.splitlines() if x != ""]
+
+    instructions = input[0]
+    input = input[1:]
+    
+    network_dict = {x[:3]:[x[7:10], x[-4:-1]] for x in input}
+    
+    nodes = [n for n in network_dict.keys() if n[-1] == "A"]
+    
+    steps = 0
+
+    while not all([n[-1] == "Z" for n in nodes]):
+    
+        instruction = instructions[steps % len(instructions)]
+        
+        if instruction == "L":
+            nodes = [network_dict[n][0] for n in nodes]
+        else:
+            nodes = [network_dict[n][1] for n in nodes]
+        
+        steps += 1
+        
+    return steps
+
+print(f"Part 2 test output = {part2(test3)} \n")
+
+# print(f"Part 2 output = {part2(input)} \n")
