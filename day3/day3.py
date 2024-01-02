@@ -1,5 +1,5 @@
 import re
-from numpy import prod
+from math import prod
 
 test = """
 467..114..
@@ -51,53 +51,47 @@ print(f"Part 1 output = {part1(input)} \n")
 
 def part2(input):
 
-    gears_list = []
+    input = [val for val in input.splitlines() if val != ""]
     
-    input = [val for val in input.split("\n") if val != ""]
-    num_lines = len(input)
-    
-    for row, line in enumerate(input):
-        
+    n = len(input)
+
+    data = [[[[], False] for y in x] for x in input]
+
+    for r, line in enumerate(input):
+
         for match in re.finditer(r"\d+", line):
-            col_start = match.start()
-            col_end = match.end()
+            s = match.start()
+            e = match.end()
+            m = len(line)
 
-            row_above = max(row - 1,0)
-            row_below = min(row + 1,num_lines)+1
+            adjacent = [val[max(0, s-1):min(e+1,m)] for val in input[max(0,r-1):(1+min(r+1,n))]]
 
-            col_left = max(col_start - 1, 0)
-            col_right = min(col_end + 1, len(line))
-
-            adjacent = [i[col_left:col_right] for i in input[row_above:row_below]]
-            
-            pattern = r"[^.0-9]+"
-
-            if re.findall(pattern,"".join(adjacent)):
-                num = int(line[col_start:col_end])
-
-            gear_idx_in_adjacent = "".join(adjacent).find("*")
-
-            if gear_idx_in_adjacent > -1:
+            if [val for val in "".join(adjacent) if val != "." and not val.isdigit()]:
+                num = int(line[s:e])
                 
-                gear_col = col_left + gear_idx_in_adjacent % (col_right - col_left)
+
+                for i in range(max(0,r-1),min(r+2,n)):
+                    for j in range(max(0,s-1),(min(e+1,m))):
+                        
+                        data[i][j][0].append(num)
+                        
+                        if input[i][j] == "*":
+                            data[i][j][1] = True
+                        
+    gears = [[y for y in x if len(y[0]) == 2 and y[1]] for x in data]
+
+    score = 0
+
+    gear_ratios = []
+
+    for gear in gears:
+        if gear:
+            for entry in gear:
                 
-                gear_row = row + gear_idx_in_adjacent // (col_right - col_left) - 1
+                score += entry[0][0]*entry[0][1]
+                gear_ratios.append(entry[0][0]*entry[0][1])
 
-                if row_above == 0:
-                    gear_row += 1
-                elif row_below == num_lines:
-                    gear_row -= 1
-                
-                gears_list.append([(gear_row,gear_col), num])
-
-    gears_num = set(map(lambda x:x[0], gears_list))
-    gears_list = [[y[1] for y in gears_list if y[0] == x] for x in gears_num]
-    gears_list = [val for val in gears_list if len(val) == 2]
-    output = sum([prod(val) for val in gears_list])
-    
-    print(gears_list)
-
-    return output
+    return score
 
 print(f"Part 2 test output = {part2(test)} \n")
 
