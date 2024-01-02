@@ -112,8 +112,6 @@ def part2(input):
     loop_otherway.reverse()
     loop = loop + loop_otherway[:-1]
 
-    print(loop)
-
     def shoelace_formula(points):
         # https://en.wikipedia.org/wiki/Shoelace_formula
         points.append(points[0])
