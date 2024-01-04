@@ -65,7 +65,7 @@ def part2(input):
 
     n_rows = len(input)
     n_cols = len(input[0])
-    expansion = int(1e2)
+    expansion = 1_000_000
 
     rows_with_galaxies = []
     cols_with_galaxies = []
@@ -79,34 +79,28 @@ def part2(input):
     rows_without_galaxies = [i for i in range(n_rows) if i not in rows_with_galaxies]
     cols_without_galaxies = [i for i in range(n_cols) if i not in cols_with_galaxies]
 
-    skip = 0
+    galaxies = [(i,j) for i in range(len(input)) for j in range(len(input[0])) if input[i][j] == "#"]
 
-    for r, row in enumerate(input):
-        if r in rows_without_galaxies:
-            input = input[:(skip+r)] + ["." * n_cols] * (expansion - 1) + input[(skip+r):]
-            skip += (expansion - 1)
+    def num_empty_between_galaxies(glx1, glx2, mult):
+        xrange = range(min(glx1[0],glx2[0]), max(glx1[0],glx2[0]))
+        yrange = range(min(glx1[1],glx2[1]), max(glx1[1],glx2[1]))
 
-    input_expanded = []
+        empty_rows_traversed = [x for x in rows_without_galaxies if x in xrange]
+        empty_cols_traversed = [y for y in cols_without_galaxies if y in yrange]
 
-    for row in input:
-        skip = 0
-        temp = row
+        expanded_steps = (len(empty_rows_traversed) + len(empty_cols_traversed)) * (mult - 1)
 
-        for c, entry in enumerate(row):
-            if c in cols_without_galaxies:
-                temp = temp[:(skip+c)] + "." * (expansion - 1) + temp[(skip + c):]
-                skip += (expansion - 1)
-
-        input_expanded.append(temp)
-
-    galaxies = [(i,j) for i in range(len(input_expanded)) for j in range(len(input_expanded[0])) if input_expanded[i][j] == "#"]
+        return expanded_steps
 
     score = 0
 
     for pair in combinations(galaxies, 2):
-        steps = abs(pair[0][0] - pair[1][0]) + abs(pair[0][1] - pair[1][1])
-        score += steps
+        xsteps = abs(pair[0][0] - pair[1][0])
+        ysteps = abs(pair[0][1] - pair[1][1])
+        score += xsteps + ysteps + num_empty_between_galaxies(pair[0], pair[1], expansion)
     
     return score
 
 print(f"Part 2 test output = {part2(test)} \n")
+
+print(f"Part 2 output = {part2(input)} \n")
