@@ -28,35 +28,21 @@ def part1(input):
         return ["".join(x) for x in list(map(list, zip(*entry)))]
 
     def find_mirrors(entry):
-        
-        mirrors = []
 
-        for i, _ in enumerate(entry):
-            if i > 0:
-                if entry[i] == entry[i-1]:
-                    rows_above = i - 1
-                    rows_below = len(entry) - i - 1
+        for i in range(1, len(entry)):
+            if all(a == b for a, b in zip(reversed(entry[:i]), entry[i:])):
+                return i
+            
+        return 0
 
-                    above = entry[:rows_above]
-                    below = entry[-rows_below:]
-
-                    floor = min(rows_above, rows_below)
-                    above = above[-floor:]
-                    below = below[:floor]
-                    below.reverse()
-
-                    if above == below:
-                        mirrors.append(i)
-
-        return np.array(mirrors)
-    
     score = 0
 
     for entry in input:
-        horizontal_mirrors = find_mirrors(entry)
-        vertical_mirrors = find_mirrors(transpose(entry))
-
-        score += np.sum(100 * horizontal_mirrors) + np.sum(vertical_mirrors)
+        if horiz_mirror := find_mirrors(entry):
+            score += 100 * horiz_mirror
+        
+        if vert_mirror := find_mirrors(transpose(entry)):
+            score += vert_mirror
 
     return score
 
@@ -66,3 +52,37 @@ with open("day13\input", "r") as input:
     input = "".join([val for val in input])
 
 print(f"Part 1 output = {part1(input)} \n")
+
+def part2(input):
+        
+    input = input.strip().splitlines()
+    input = [list(g) for k, g in groupby(input, key = bool) if k]
+
+    def transpose(entry):
+        return ["".join(x) for x in list(map(list, zip(*entry)))]
+    
+    def difference(a, b):
+        return sum(x != y for x,y in zip(a, b))
+
+    def find_mirrors(entry):
+
+        for i in range(1, len(entry)):
+            if sum(difference(a,b) for a, b in zip(reversed(entry[:i]), entry[i:])) == 1:
+                return i
+            
+        return 0
+
+    score = 0
+
+    for entry in input:
+        if horiz_mirror := find_mirrors(entry):
+            score += 100 * horiz_mirror
+        
+        if vert_mirror := find_mirrors(transpose(entry)):
+            score += vert_mirror
+
+    return score
+
+print(f"Part 2 test output = {part2(test)} \n")
+
+print(f"Part 2 output = {part2(input)} \n")
