@@ -64,7 +64,7 @@ print(f"Part 1 test output = {part1(test)} \n")
 with open("day16\input", "r") as input:
     input = "".join([val for val in input])
 
-# print(f"Part 1 output = {part1(input)} \n")
+print(f"Part 1 output = {part1(input)} \n")
 
 def part2(input):
     input = [x.strip() for x in input.strip().splitlines()]
