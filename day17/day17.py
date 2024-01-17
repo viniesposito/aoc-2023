@@ -19,93 +19,44 @@ test = """
 def part1(input):
     
     input = input.strip().splitlines()
-    origin = 0, 0
-    destination = len(input) - 1, len(input[0]) - 1
+    input = [[int(c) for c in r] for r in input]
 
-    def is_valid(input, pos):
+    origin = 0,0
+    end = len(input) - 1, len(input[0]) -1
+    m, n = end
+    history = set()
+    directions = [(-1,0),(1,0),(0,-1),(0,1)]
+    queue = [(0, origin, (0,0), 0)]
+
+    while queue:
+        load, pos, direction, k = heapq.heappop(queue)
         x, y = pos
-        m = len(input)
-        n = len(input[0])
-
-        if not (0 <= x < m and 0 <= y < n):
-            return False
-        
-        return True
-
-    def get_neighbors(input, pos, direction, k):
-        x, y = pos
-
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            new_pos = x + dx, y + dy
-
-            if (dx,dy) == direction:
-                k += 1
-            else:
-                k = 1
-
-            if is_valid(input, new_pos) and k <= 3:
-                yield new_pos
-
-    def score_path(input, path):
-        score = 0
-
-        if path[0] == (0,0):
-            s = 1
-        else:
-            s = 0
-
-        for x,y in path[s:]:
-            score += int(input[x][y])
-
-        return score
-
-    def get_shorter_paths(input, tentative, positions, through):
-        path = tentative[through] + [through]
-
-        for pos in positions:
-            if pos in tentative and score_path(input, tentative[pos]) > score_path(input, path):
-                continue
-            yield pos, path
-
-    tentative = {origin: []}
-    queue = [(0, origin, (0, 0), 1)]
-    certain = set()
-
-    while destination not in certain and queue:
-        _, current, direction, k = heapq.heappop(queue)
-        if current in certain:
+        dx, dy = direction
+        if pos == end:
+            break
+        if (pos, direction, k) in history:
             continue
-        certain.add(current)
-        neighbors = set(get_neighbors(input, current, direction, k)) - certain
-        shorter = get_shorter_paths(input, tentative, neighbors, current)
-        for neighbor, path in shorter:
-            tentative[neighbor] = path
-            new_direction = (neighbor[0] - current[0], neighbor[1] - current[1])
-            if new_direction == direction:
-                k += 1
-                if k > 3:
-                    continue
-            else:
-                k = 1
-            heapq.heappush(queue, (score_path(input, path + [neighbor]), neighbor, new_direction, k))
-    if destination in tentative:
-        best_path = tentative[destination] + [destination]
+        history.add((pos, direction, k))
+        for new_direction in directions:
+            new_dx, new_dy = new_direction
+            if new_dx == -dx and new_dy == -dy:
+                continue
+            new_x, new_y = x + new_dx, y + new_dy
+            new_pos = new_x, new_y
+            if new_x < 0 or new_y < 0 or new_x > m or new_y > n:
+                continue
+            going_straight = (new_direction == direction)
+            if going_straight and k == 3:
+                continue
+            new_k = k + 1 if going_straight else 1
+            new_load = load + input[new_x][new_y]
+            heapq.heappush(queue, (new_load, new_pos, new_direction, new_k))
 
-    print(score_path(input, best_path))
-
-    return best_path
-
-def show_path(path, input):
-    input = input.strip().splitlines()
-    for x, y in path:
-        input[x] = input[x][:y] + "@" + input[x][y + 1 :]
-    return "\n".join(input) + "\n"
-
-print(show_path(part1(test),test))
+    return load
 
 print(f"Part 1 test output = {part1(test)} \n")
 
-# with open("day17\input", "r") as input:
-#     input = "".join([val for val in input])
+with open("day17\input", "r") as input:
+    input = "".join([val for val in input])
 
-# print(f"Part 1 output = {part1(input)} \n")
+print(f"Part 1 output = {part1(input)} \n")
