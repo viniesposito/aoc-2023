@@ -98,6 +98,7 @@ def part2(input):
         if wf_name == "A":
             score += prod(1 + x[1] - x[0] for x in xmas_ranges)
             continue
+
         elif wf_name == "R":
             continue
 
@@ -123,7 +124,6 @@ def part2(input):
 
     return score
     
-
 print(f"Part 2 test output = {part2(test)} \n")
 
 print(f"Part 2 output = {part2(input)} \n")
